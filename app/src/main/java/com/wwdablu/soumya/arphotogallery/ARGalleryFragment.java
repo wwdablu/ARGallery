@@ -7,7 +7,7 @@ import com.google.ar.sceneform.ux.ArFragment;
 
 import java.util.LinkedList;
 
-public class ARGalleryFragment extends ArFragment implements ViewRenderCallback {
+public class ARGalleryFragment extends ArFragment implements RenderCallback {
 
     private ViewRenderHelper viewRenderHelper;
     private LinkedList<String> galleryImagePaths;
@@ -34,8 +34,17 @@ public class ARGalleryFragment extends ArFragment implements ViewRenderCallback 
     }
 
     @Override
-    public void onViewClicked() {
+    public void onRenderableClicked() {
         showImage();
+    }
+
+    @Override
+    public void onRenderableRendered() {
+        //
+    }
+
+    public void rotate(boolean enable) {
+        viewRenderHelper.rotateOnZAxis(enable, 5000);
     }
 
     private void removeUpdateListener() {

@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
@@ -13,6 +15,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE = 100;
 
     private ARGalleryFragment arGalleryFragment;
+    private boolean rotateEnable = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
 
         arGalleryFragment = (ARGalleryFragment) getSupportFragmentManager()
             .findFragmentById(R.id.arfrag_gallery);
+
+        findViewById(R.id.btn_rotate).setOnClickListener(rotateButtonClickListener);
 
         //Check for permission to access gallery
         if(!GalleryUtil.isPermitted(this)) {
@@ -45,6 +50,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void handleGalleryPermissionObtained() {
-        Toast.makeText(this, GalleryUtil.getAllImages(this).size() + "", Toast.LENGTH_SHORT).show();
+        //
     }
+
+    private View.OnClickListener rotateButtonClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+
+            rotateEnable = !rotateEnable;
+            arGalleryFragment.rotate(rotateEnable);
+        }
+    };
 }
