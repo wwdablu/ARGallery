@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">ARPhotoGallery</string>
+    <string name="imageview_containing_images_from_gallery">ImageView containing images from gallery.</string>
+</resources>
