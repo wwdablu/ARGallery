@@ -1,17 +1,36 @@
 package com.wwdablu.soumya.arphotogallery;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+
 import com.google.ar.core.Frame;
 import com.google.ar.core.Plane;
 import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.ux.ArFragment;
+import com.wwdablu.soumya.arphotogallery.renderers.RenderHelper;
+import com.wwdablu.soumya.arphotogallery.renderers.ShapeRendererHelper;
+import com.wwdablu.soumya.arphotogallery.renderers.ViewRenderHelper;
 
 import java.util.LinkedList;
 
 public class ARGalleryFragment extends ArFragment implements RenderCallback {
 
-    private ViewRenderHelper viewRenderHelper;
+    public enum RenderBy {
+        Plane,
+        Shape
+    }
+
+    private RenderHelper renderHelper;
     private LinkedList<String> galleryImagePaths;
+    private RenderBy renderBy;
+
     private int currentIndex;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        renderBy = RenderBy.Shape;
+    }
 
     @Override
     public void onResume() {
@@ -19,8 +38,19 @@ public class ARGalleryFragment extends ArFragment implements RenderCallback {
         getPlaneDiscoveryController().hide();
         getPlaneDiscoveryController().setInstructionView(null);
 
-        if(viewRenderHelper == null) {
-            viewRenderHelper = new ViewRenderHelper(this);
+        switch (renderBy) {
+
+            case Plane:
+                if(renderHelper == null) {
+                    renderHelper = new ViewRenderHelper(this);
+                }
+                break;
+
+            case Shape:
+                default:
+                    if(renderHelper == null) {
+                        renderHelper = new ShapeRendererHelper(ShapeRendererHelper.Shape.Cube, this);
+                    }
         }
 
         galleryImagePaths = GalleryUtil.getAllImages(getActivity());
@@ -35,7 +65,13 @@ public class ARGalleryFragment extends ArFragment implements RenderCallback {
 
     @Override
     public void onRenderableClicked() {
-        showImage();
+
+        switch (renderBy) {
+            case Plane:
+                showImage();
+                break;
+        }
+
     }
 
     @Override
@@ -44,7 +80,7 @@ public class ARGalleryFragment extends ArFragment implements RenderCallback {
     }
 
     public void rotate(boolean enable) {
-        viewRenderHelper.rotateOnZAxis(enable, 5000);
+        renderHelper.rotateOnZAxis(enable, 5000);
     }
 
     private void removeUpdateListener() {
@@ -52,7 +88,11 @@ public class ARGalleryFragment extends ArFragment implements RenderCallback {
     }
 
     private void showImage() {
-        viewRenderHelper.showImage(getActivity(), getNextImage(), this);
+        ((ViewRenderHelper)renderHelper).showImage(getActivity(), getNextImage(), this);
+    }
+
+    private void showShapeImage() {
+        ((ShapeRendererHelper) renderHelper).showShape(getActivity(), this, getNextImage());
     }
 
     private String getNextImage() {
@@ -78,7 +118,17 @@ public class ARGalleryFragment extends ArFragment implements RenderCallback {
 
         for(Plane plane : frame.getUpdatedTrackables(Plane.class)) {
             removeUpdateListener();
-            showImage();
+
+            switch (renderBy) {
+                case Plane:
+                    showImage();
+                    break;
+
+                case Shape:
+                default:
+                    showShapeImage();
+            }
+
             break;
         }
     };

@@ -1,8 +1,10 @@
-package com.wwdablu.soumya.arphotogallery;
+package com.wwdablu.soumya.arphotogallery.renderers;
 
+import android.animation.ObjectAnimator;
 import android.graphics.Point;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.animation.LinearInterpolator;
 
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Frame;
@@ -10,24 +12,61 @@ import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
 import com.google.ar.core.Trackable;
 import com.google.ar.sceneform.AnchorNode;
+import com.google.ar.sceneform.math.Quaternion;
+import com.google.ar.sceneform.math.QuaternionEvaluator;
+import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.Renderable;
-import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.google.ar.sceneform.ux.TransformableNode;
+import com.wwdablu.soumya.arphotogallery.ARGalleryFragment;
+import com.wwdablu.soumya.arphotogallery.RenderCallback;
 
 import java.util.List;
 
-abstract class RenderHelper {
+public abstract class RenderHelper {
 
     protected RenderCallback mRenderCallback;
     protected TransformableNode transformableNode;
+
+    private ObjectAnimator orbitAnimation;
 
     RenderHelper(@Nullable RenderCallback callback) {
         mRenderCallback = callback;
     }
 
-    protected abstract void rotateOnZAxis(boolean enable, long timeInMs);
+    public void rotateOnZAxis(boolean enable, long timeInMs) {
+        if(enable && orbitAnimation == null) {
+            Quaternion orientation1 = Quaternion.axisAngle(new Vector3(0.0f, 1.0f, 0.0f), 0);
+            Quaternion orientation2 = Quaternion.axisAngle(new Vector3(0.0f, 1.0f, 0.0f), 120);
+            Quaternion orientation3 = Quaternion.axisAngle(new Vector3(0.0f, 1.0f, 0.0f), 240);
+            Quaternion orientation4 = Quaternion.axisAngle(new Vector3(0.0f, 1.0f, 0.0f), 360);
 
-    protected void addViewToFrame(@NonNull ViewRenderable viewRenderable, @NonNull ARGalleryFragment arGalleryFragment) {
+            orbitAnimation = new ObjectAnimator();
+            orbitAnimation.setObjectValues(orientation1, orientation2, orientation3, orientation4);
+
+            // Next, give it the localRotation property.
+            orbitAnimation.setPropertyName("localRotation");
+
+            // Use Sceneform's QuaternionEvaluator.
+            orbitAnimation.setEvaluator(new QuaternionEvaluator());
+
+            //  Allow orbitAnimation to repeat forever
+            orbitAnimation.setRepeatCount(ObjectAnimator.INFINITE);
+            orbitAnimation.setRepeatMode(ObjectAnimator.RESTART);
+            orbitAnimation.setInterpolator(new LinearInterpolator());
+            orbitAnimation.setAutoCancel(true);
+
+            orbitAnimation.setTarget(transformableNode);
+            orbitAnimation.setDuration(timeInMs);
+        }
+
+        if(enable) {
+            orbitAnimation.start();
+        } else {
+            orbitAnimation.cancel();
+        }
+    }
+
+    protected void addViewToFrame(@NonNull Renderable renderable, @NonNull ARGalleryFragment arGalleryFragment) {
 
         Frame frame = arGalleryFragment.getArSceneView().getArFrame();
         Point center = getScreenCenter(arGalleryFragment);
@@ -37,7 +76,7 @@ abstract class RenderHelper {
             for(HitResult hit : result) {
                 Trackable trackable = hit.getTrackable();
                 if (trackable instanceof Plane && ((Plane) trackable).isPoseInPolygon(hit.getHitPose())) {
-                    addNodeToScene(viewRenderable, hit.createAnchor(), arGalleryFragment);
+                    addNodeToScene(renderable, hit.createAnchor(), arGalleryFragment);
                     break;
                 }
             }
