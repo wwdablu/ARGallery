@@ -2,7 +2,9 @@
 Using Sceneform to render bitmaps from Gallery using ViewRenderable and ShapeRenderable.  
   
 # Sample  
-Check the sample folder and inside it you will be able to find videos and images of the output.  
+Version 1.0 of cube rotation by showing bitmap from gallery.  
+https://www.youtube.com/watch?v=1PQledXnPNU&feature=youtu.be  
+
 
 # Explanation  
 In here I tried to show images (or bitmaps) from the gallery of the user. Tried to show it using ViewRenderable and ShapeRenderable.  
