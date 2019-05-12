@@ -70,6 +70,10 @@ public class ARGalleryFragment extends ArFragment implements RenderCallback {
             case Plane:
                 showImage();
                 break;
+
+            case Shape:
+                showShapeImage();
+                break;
         }
 
     }

@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.widget.ImageView;
 
+import com.google.ar.sceneform.math.Quaternion;
+import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.wwdablu.soumya.arphotogallery.ARGalleryFragment;
 import com.wwdablu.soumya.arphotogallery.R;
@@ -38,6 +40,17 @@ public final class ViewRenderHelper extends RenderHelper {
         if(mRenderCallback != null) {
             mRenderCallback.onRenderableRendered();
         }
+    }
+
+    @Override
+    public void rotateOnZAxis(boolean enable, long timeInMs) {
+
+        Quaternion orientation1 = Quaternion.axisAngle(new Vector3(0.0f, 1.0f, 0.0f), 0);
+        Quaternion orientation2 = Quaternion.axisAngle(new Vector3(0.0f, 1.0f, 0.0f), 120);
+        Quaternion orientation3 = Quaternion.axisAngle(new Vector3(0.0f, 1.0f, 0.0f), 240);
+        Quaternion orientation4 = Quaternion.axisAngle(new Vector3(0.0f, 1.0f, 0.0f), 360);
+
+        rotateOnZAxis(enable, timeInMs, orientation1, orientation2, orientation3, orientation4);
     }
 
     private void createViewRenderable(@NonNull Context context,

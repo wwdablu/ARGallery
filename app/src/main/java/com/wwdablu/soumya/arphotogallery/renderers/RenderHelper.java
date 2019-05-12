@@ -14,7 +14,6 @@ import com.google.ar.core.Trackable;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.QuaternionEvaluator;
-import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.ux.TransformableNode;
 import com.wwdablu.soumya.arphotogallery.ARGalleryFragment;
@@ -24,8 +23,8 @@ import java.util.List;
 
 public abstract class RenderHelper {
 
-    protected RenderCallback mRenderCallback;
-    protected TransformableNode transformableNode;
+    RenderCallback mRenderCallback;
+    private TransformableNode transformableNode;
 
     private ObjectAnimator orbitAnimation;
 
@@ -33,15 +32,13 @@ public abstract class RenderHelper {
         mRenderCallback = callback;
     }
 
-    public void rotateOnZAxis(boolean enable, long timeInMs) {
+    public abstract void rotateOnZAxis(boolean enable, long timeInMs);
+
+    void rotateOnZAxis(boolean enable, long timeInMs, Quaternion... quaternionArray) {
         if(enable && orbitAnimation == null) {
-            Quaternion orientation1 = Quaternion.axisAngle(new Vector3(0.0f, 1.0f, 0.0f), 0);
-            Quaternion orientation2 = Quaternion.axisAngle(new Vector3(0.0f, 1.0f, 0.0f), 120);
-            Quaternion orientation3 = Quaternion.axisAngle(new Vector3(0.0f, 1.0f, 0.0f), 240);
-            Quaternion orientation4 = Quaternion.axisAngle(new Vector3(0.0f, 1.0f, 0.0f), 360);
 
             orbitAnimation = new ObjectAnimator();
-            orbitAnimation.setObjectValues(orientation1, orientation2, orientation3, orientation4);
+            orbitAnimation.setObjectValues((Object[]) quaternionArray);
 
             // Next, give it the localRotation property.
             orbitAnimation.setPropertyName("localRotation");
